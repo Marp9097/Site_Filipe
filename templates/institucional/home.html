@@ -1,0 +1,244 @@
+{% extends "site_base.html" %}
+{% load static %}
+
+{% block content %}
+{# ===================== HERO (sobre o arco escuro do fundo) ===================== #}
+<section id="inicio" class="hero" aria-labelledby="hero-titulo">
+  <div class="container hero__conteudo">
+    <img class="hero__logo" src="{% static 'img/creative_logo_branco.png' %}" alt="Creative Comunicação" width="546" height="165" fetchpriority="high" data-hero-logo>
+    <p class="chip hero__selo"><svg aria-hidden="true"><use href="#i-brilho"></use></svg>Comunicação visual em {{ config.cidade }}</p>
+    <h1 id="hero-titulo" class="hero__titulo">Comunicação Visual que <span>destaca a sua marca</span></h1>
+
+    <div class="hero__cartao">
+      <p class="hero__texto">Somos especialistas em criar soluções visuais únicas para sua empresa. Letreiros, fachadas, adesivos, placas e muito mais. Dê vida à sua marca com a Creative Comunicação.</p>
+      <div class="hero__acoes">
+        <a class="botao botao--secundario" href="#portfolio">Ver trabalhos</a>
+        <a class="botao botao--primario" href="#contato">Solicitar Orçamento<svg aria-hidden="true"><use href="#i-flecha"></use></svg></a>
+      </div>
+    </div>
+
+    <ul class="hero__chips" role="list" aria-label="Serviços">
+      {% for servico in servicos %}
+      <li><a class="chip" href="#servicos"><svg aria-hidden="true"><use href="#i-{{ servico.icone }}"></use></svg>{{ servico.titulo }}</a></li>
+      {% endfor %}
+    </ul>
+
+    {% if config.anos_experiencia %}
+    <p class="hero__contador"><strong>{{ config.anos_experiencia }}</strong> Anos de Experiência</p>
+    {% endif %}
+  </div>
+</section>
+
+<main>
+  {# ===================== SERVIÇOS ===================== #}
+  <section id="servicos" class="secao" aria-labelledby="servicos-titulo">
+    <div class="container">
+      <div class="painel-secao">
+        <header class="secao__cabecalho">
+          <p class="secao__rotulo">Nossos Serviços</p>
+          <h2 id="servicos-titulo" class="secao__titulo">Soluções Completas em Comunicação Visual</h2>
+          <p class="secao__subtitulo">Oferecemos uma gama completa de serviços para transformar sua marca em experiências visuais memoráveis</p>
+        </header>
+        <ul class="servicos" role="list">
+          {% for servico in servicos %}
+          <li class="cartao servico" data-icone="{{ servico.icone }}">
+            <span class="servico__icone" aria-hidden="true"><svg><use href="#i-{{ servico.icone }}"></use></svg></span>
+            <h3 class="servico__titulo">{{ servico.titulo }}</h3>
+            <p class="servico__texto">{{ servico.descricao }}</p>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {# ===================== PORTFÓLIO (galeria ou carrossel, conforme o painel) ===================== #}
+  <section id="portfolio" class="secao" aria-labelledby="portfolio-titulo">
+    <div class="container">
+      <div class="painel-secao">
+        <header class="secao__cabecalho">
+          <p class="secao__rotulo">Portfólio</p>
+          <h2 id="portfolio-titulo" class="secao__titulo">Nossos trabalhos</h2>
+          <p class="secao__subtitulo">Confira alguns dos projetos que realizamos com excelência e dedicação</p>
+        </header>
+
+        {% if fotos %}
+        <div id="portfolio-fotos" class="portfolio portfolio--{{ config.modo_fotos }}" data-modo="{{ config.modo_fotos }}">
+          {% if config.modo_fotos == "carrossel" %}
+          {% with total=fotos|length %}
+          <div class="carrossel" data-carrossel role="region" aria-roledescription="carrossel" aria-label="Fotos dos nossos trabalhos" tabindex="0">
+            <div class="carrossel__janela">
+              <ul class="carrossel__trilho" role="list" data-trilho>
+                {% for foto in fotos %}
+                <li class="carrossel__slide" role="group" aria-roledescription="slide" aria-label="{{ forloop.counter }} de {{ total }}" data-slide>
+                  <img src="{{ foto.imagem.url }}" alt="{{ foto.texto_alternativo }}" loading="lazy" draggable="false">
+                  {% if foto.titulo or foto.categoria %}
+                  <p class="carrossel__legenda">{{ foto.titulo|default:"Trabalho da Creative" }}{% if foto.categoria %}<small>{{ foto.categoria.nome }}</small>{% endif %}</p>
+                  {% endif %}
+                </li>
+                {% endfor %}
+              </ul>
+              {% if total > 1 %}
+              <button class="carrossel__seta carrossel__seta--anterior" type="button" aria-label="Foto anterior" data-anterior><svg aria-hidden="true"><use href="#i-seta-esq"></use></svg></button>
+              <button class="carrossel__seta carrossel__seta--proxima" type="button" aria-label="Próxima foto" data-proxima><svg aria-hidden="true"><use href="#i-seta-dir"></use></svg></button>
+              {% endif %}
+            </div>
+            {% if total > 1 %}
+            <ol class="carrossel__indicadores" role="list">
+              {% for foto in fotos %}
+              <li><button class="carrossel__indicador" type="button" aria-label="Ir para a foto {{ forloop.counter }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" data-indicador="{{ forloop.counter0 }}"></button></li>
+              {% endfor %}
+            </ol>
+            <p class="carrossel__status" aria-live="polite" data-status>Foto 1 de {{ total }}</p>
+            {% endif %}
+          </div>
+          {% endwith %}
+          {% else %}
+          {% if categorias|length > 1 %}
+          <div class="filtros" role="group" aria-label="Filtrar fotos por categoria">
+            <button class="chip" type="button" data-filtro="todas" aria-pressed="true">Todas</button>
+            {% for categoria in categorias %}
+            <button class="chip" type="button" data-filtro="{{ categoria.slug }}" aria-pressed="false">{{ categoria.nome }}</button>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <ul class="galeria" role="list" data-galeria>
+            {% for foto in fotos %}
+            <li class="galeria__item" data-categoria="{{ foto.categoria.slug|default:'' }}">
+              <a class="galeria__link" href="{{ foto.imagem.url }}" data-ampliar data-legenda="{% if foto.titulo %}{{ foto.titulo }}{% elif foto.categoria %}{{ foto.categoria.nome }}{% endif %}" aria-label="Ampliar foto: {{ foto.texto_alternativo }}">
+                <img src="{{ foto.imagem.url }}" alt="{{ foto.texto_alternativo }}" loading="lazy">
+                {% if foto.titulo %}<span class="galeria__legenda" aria-hidden="true">{{ foto.titulo }}</span>{% endif %}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+          <p class="portfolio__filtro-vazio" hidden data-filtro-vazio>Nenhuma foto nessa categoria por enquanto.</p>
+
+          <dialog class="lightbox" aria-label="Foto ampliada" data-lightbox>
+            <button class="lightbox__botao lightbox__fechar" type="button" aria-label="Fechar" data-fechar><svg aria-hidden="true"><use href="#i-fechar"></use></svg></button>
+            <button class="lightbox__botao lightbox__anterior" type="button" aria-label="Foto anterior" data-anterior><svg aria-hidden="true"><use href="#i-seta-esq"></use></svg></button>
+            <figure class="lightbox__figura">
+              <img alt="" data-imagem>
+              <figcaption class="lightbox__legenda"><span data-legenda></span> <span class="lightbox__contador" data-contador></span></figcaption>
+            </figure>
+            <button class="lightbox__botao lightbox__proxima" type="button" aria-label="Próxima foto" data-proxima><svg aria-hidden="true"><use href="#i-seta-dir"></use></svg></button>
+          </dialog>
+          {% endif %}
+        </div>
+        {% else %}
+        <div class="portfolio__vazio">
+          <svg aria-hidden="true"><use href="#i-imagem"></use></svg>
+          <strong>Novas fotos chegando em breve</strong>
+          <p>Estamos selecionando os melhores trabalhos para mostrar aqui.{% if config.instagram %} Enquanto isso, veja mais no nosso Instagram.{% endif %}</p>
+          {% if config.instagram %}<a class="botao botao--secundario" href="{{ config.instagram }}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-instagram"></use></svg>Ver no Instagram<span class="visualmente-oculto"> (abre em nova aba)</span></a>{% endif %}
+        </div>
+        {% endif %}
+
+        <div class="portfolio__cta">
+          <p>Gostou do que viu? Entre em contato e faça seu orçamento!</p>
+          <a class="botao botao--primario" href="#contato">Solicitar Orçamento<svg aria-hidden="true"><use href="#i-flecha"></use></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ===================== SOBRE / DIFERENCIAIS ===================== #}
+  <section id="sobre" class="secao" aria-labelledby="sobre-titulo">
+    <div class="container">
+      <div class="painel-secao sobre">
+        <div class="sobre__texto">
+          <p class="secao__rotulo">Sobre a Creative</p>
+          <h2 id="sobre-titulo" class="secao__titulo">Qualidade do projeto à instalação</h2>
+          <p>Trabalhamos com as melhores tecnologias e materiais do mercado para garantir durabilidade, qualidade e acabamento impecável em todos os nossos projetos.</p>
+        </div>
+        <ul class="diferenciais" role="list">
+          <li class="cartao diferencial"><svg aria-hidden="true"><use href="#i-check"></use></svg><strong>Equipe especializada e experiente</strong></li>
+          <li class="cartao diferencial"><svg aria-hidden="true"><use href="#i-check"></use></svg><strong>Materiais de alta qualidade</strong></li>
+          <li class="cartao diferencial"><svg aria-hidden="true"><use href="#i-check"></use></svg><strong>Garantia de satisfação</strong></li>
+          <li class="cartao diferencial"><svg aria-hidden="true"><use href="#i-check"></use></svg><strong>Compromisso com excelência em cada projeto</strong></li>
+          <li class="cartao diferencial"><svg aria-hidden="true"><use href="#i-check"></use></svg><strong>Construímos relacionamentos duradouros</strong></li>
+          <li class="cartao diferencial"><svg aria-hidden="true"><use href="#i-check"></use></svg><strong>Sempre em busca das melhores soluções</strong></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {# ===================== DEPOIMENTOS (só os ativos; sem nenhum, a seção fica oculta) ===================== #}
+  <section id="depoimentos" class="secao" aria-labelledby="depoimentos-titulo"{% if not depoimentos %} hidden{% endif %}>
+    <div class="container">
+      <div class="painel-secao">
+        <header class="secao__cabecalho">
+          <p class="secao__rotulo">Depoimentos</p>
+          <h2 id="depoimentos-titulo" class="secao__titulo">O que dizem nossos clientes</h2>
+          <p class="secao__subtitulo">A satisfação dos nossos clientes é nossa maior motivação</p>
+        </header>
+        <ul class="depoimentos" role="list">
+          {% for depoimento in depoimentos %}
+          <li class="cartao">
+            <figure class="depoimento" data-nota="{{ depoimento.nota }}">
+              <div class="depoimento__estrelas" role="img" aria-label="Nota {{ depoimento.nota }} de 5">
+                {% for i in "12345" %}<svg class="{% if forloop.counter > depoimento.nota %}apagada{% endif %}" aria-hidden="true"><use href="#i-estrela"></use></svg>{% endfor %}
+              </div>
+              <blockquote><p>“{{ depoimento.texto }}”</p></blockquote>
+              <figcaption><strong>{{ depoimento.nome }}</strong>{% if depoimento.empresa %}{{ depoimento.empresa }}{% endif %}</figcaption>
+            </figure>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {# ===================== CONTATO ===================== #}
+  <section id="contato" class="secao" aria-labelledby="contato-titulo">
+    <div class="container">
+      <div class="painel-secao">
+        <header class="secao__cabecalho">
+          <p class="secao__rotulo">Contato</p>
+          <h2 id="contato-titulo" class="secao__titulo">Vamos tirar sua ideia do papel?</h2>
+          <p class="secao__subtitulo">Preencha o formulário abaixo e nossa equipe entrará em contato para entender seu projeto</p>
+        </header>
+
+        <div class="contato">
+          <form class="cartao formulario" method="post" action="{% url 'institucional:contato' %}#contato" novalidate>
+            {% csrf_token %}
+            {% if form.errors %}<p class="erros erros--geral" role="alert">Confira os campos destacados abaixo.</p>{% endif %}
+            {% if form.non_field_errors %}<ul class="erros erros--geral">{% for erro in form.non_field_errors %}<li>{{ erro }}</li>{% endfor %}</ul>{% endif %}
+            <div class="formulario__grade">
+              {% include "institucional/_campo.html" with field=form.nome %}
+              {% include "institucional/_campo.html" with field=form.email %}
+              {% include "institucional/_campo.html" with field=form.telefone %}
+              {% include "institucional/_campo.html" with field=form.servico %}
+            </div>
+            {% include "institucional/_campo.html" with field=form.mensagem %}
+            <button class="botao botao--primario botao--bloco" type="submit">Enviar mensagem<svg aria-hidden="true"><use href="#i-flecha"></use></svg></button>
+          </form>
+
+          <aside class="cartao contato__info" aria-label="Outros canais de contato">
+            <h3 class="servico__titulo">Prefere falar direto?</h3>
+            <ul class="contato__lista" role="list">
+              <li><a class="contato__item" href="{{ config.telefone_href }}"><svg aria-hidden="true"><use href="#i-telefone"></use></svg><span><small>Telefone</small>{{ config.telefone }}</span></a></li>
+              <li><a class="contato__item" href="mailto:{{ config.email }}"><svg aria-hidden="true"><use href="#i-email"></use></svg><span><small>E-mail</small>{{ config.email }}</span></a></li>
+              <li><p class="contato__item"><svg aria-hidden="true"><use href="#i-local"></use></svg><span><small>Cidade</small>{{ config.cidade }}</span></p></li>
+              <li><p class="contato__item"><svg aria-hidden="true"><use href="#i-relogio"></use></svg><span><small>Horário</small>{{ config.horario }}</span></p></li>
+            </ul>
+            {% if whatsapp_url %}<a class="botao botao--whatsapp botao--bloco" href="{{ whatsapp_url }}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-whatsapp"></use></svg>Chamar no WhatsApp<span class="visualmente-oculto"> (abre em nova aba)</span></a>{% endif %}
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+{% if whatsapp_url %}
+<a class="whatsapp-flutuante" href="{{ whatsapp_url }}" target="_blank" rel="noopener" aria-label="Falar no WhatsApp (abre em nova aba)">
+  <svg aria-hidden="true"><use href="#i-whatsapp"></use></svg>
+</a>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if fotos %}
+{% if config.modo_fotos == "carrossel" %}<script src="{% static 'js/carrossel.js' %}" defer></script>{% else %}<script src="{% static 'js/galeria.js' %}" defer></script>{% endif %}
+{% endif %}
+{% endblock %}

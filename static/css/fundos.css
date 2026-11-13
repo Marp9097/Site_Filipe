@@ -1,0 +1,214 @@
+/* =========================================================================
+   Creative Comunicação: fundos do site (presets escolhidos no painel)
+   A classe vem de ConfiguracaoSite.fundo_classe → <body class="fundo--X">.
+   Cada preset define: (1) tokens do tema (texto, cartões, campos) e
+   (2) a pintura do fundo numa camada fixa (div.fundo + ::before/::after), só CSS, sem imagem.
+   A miniatura do painel (.previa.fundo--X) reaproveita a mesma pintura.
+   ========================================================================= */
+
+/* ---------- Tokens dos temas ---------- */
+
+/* Tema escuro (aurora, roxo e escuro usam a mesma família de tokens) */
+.fundo--aurora,
+.fundo--roxo,
+.fundo--escuro {
+  --tema-esquema: dark;
+  --tema-texto: #ffffff;
+  --tema-texto-suave: rgba(255, 255, 255, 0.76);
+  --tema-titulo: #ffffff;
+  --tema-destaque: var(--cor-primaria-clara);
+  --tema-cartao: rgba(38, 38, 37, 0.86);
+  --tema-cartao-interno: rgba(255, 255, 255, 0.05);
+  --tema-borda: rgba(255, 255, 255, 0.12);
+  --tema-borda-forte: rgba(255, 255, 255, 0.22);
+  --tema-chip: rgba(30, 30, 40, 0.62);
+  --tema-chip-hover: rgba(52, 52, 66, 0.8);
+  --tema-campo: rgba(20, 20, 22, 0.72);
+  --tema-campo-borda: rgba(255, 255, 255, 0.2);
+  --tema-topo: rgba(26, 26, 28, 0.78);
+  --tema-erro: #ff9db0;
+  --tema-sucesso-fundo: rgba(30, 140, 80, 0.92);
+  --tema-erro-fundo: rgba(170, 30, 60, 0.94);
+  --tema-sombra: 0 24px 60px -24px rgba(0, 0, 0, 0.65);
+  --tema-logo-placa: transparent;
+}
+
+.fundo--aurora { --tema-base: #212224; }
+
+.fundo--roxo {
+  --tema-base: hsl(240 15% 8%);
+  --tema-cartao: rgba(18, 15, 30, 0.74);
+  --tema-chip: rgba(20, 14, 34, 0.6);
+  --tema-campo: rgba(10, 8, 18, 0.6);
+  --tema-topo: rgba(16, 13, 26, 0.8);
+}
+
+.fundo--escuro {
+  --tema-base: hsl(240 15% 8%);
+  --tema-cartao: hsl(240 12% 12% / 0.92);
+  --tema-chip: hsl(240 12% 16%);
+  --tema-chip-hover: hsl(240 12% 22%);
+  --tema-campo: hsl(240 15% 7%);
+  --tema-topo: hsl(240 15% 8% / 0.86);
+}
+
+/* Tema claro: texto escuro, cartões lilás bem suaves, topo e rodapé grafite (logo é branco) */
+.fundo--claro {
+  --tema-esquema: light;
+  --tema-base: #ffffff;
+  --tema-texto: #17141f;
+  --tema-texto-suave: #4b4558;
+  --tema-titulo: #17141f;
+  --tema-destaque: hsl(280 85% 45%);
+  --tema-cartao: #f7f5fa;
+  --tema-cartao-interno: #ffffff;
+  --tema-borda: #e6e1ee;
+  --tema-borda-forte: #cfc8da;
+  --tema-chip: #f1edf6;
+  --tema-chip-hover: #e7e0f0;
+  --tema-campo: #ffffff;
+  --tema-campo-borda: #b9b1c7;
+  --tema-topo: #18151f;
+  --tema-erro: #b3123a;
+  --tema-sucesso-fundo: #146c43;
+  --tema-erro-fundo: #9f1239;
+  --tema-sombra: 0 18px 44px -24px rgba(40, 20, 70, 0.35);
+  --tema-logo-placa: #18151f;
+}
+
+/* ---------- Pintura dos fundos ---------- */
+
+body.fundo--aurora,
+body.fundo--roxo,
+body.fundo--claro,
+body.fundo--escuro {
+  background-color: var(--tema-base);
+}
+
+/* Camada fixa do site: <div class="fundo" aria-hidden="true"> logo no início do <body>.
+   Fica presa à tela por position: fixed (e não por background-attachment: fixed,
+   que o Safari do iPhone ignora). O fundo do elemento, o ::before e o ::after
+   são as 3 camadas da pintura. */
+.fundo {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fundo::before,
+.fundo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+/* Miniaturas do painel (.previa.fundo--X) usam a mesma pintura, presas ao cartão */
+.previa {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--tema-base);
+}
+
+.previa::before,
+.previa::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* --- aurora (estilo lovable.dev) ---------------------------------------
+   Calibrado contra o print 1561x851 (projeto/referencia/fundo-lovable.jpeg),
+   comparando uma grade de 15x23 pontos (fora da UI da Lovable).
+   3 camadas, porque o centro "atrasa" a sequência de cores (U invertido):
+   - fundo da camada = faixas das laterais (as cores sobem primeiro pelas
+     bordas) + leve atraso rosado na borda extrema;
+   - ::before = sequência intermediária (a ~12% do centro), máscara com a
+     elipse larga do topo + coluna média;
+   - ::after  = sequência do centro, máscara só na coluna central.
+   ------------------------------------------------------------------------ */
+.fundo--aurora {
+  --aurora-faixas:
+    radial-gradient(ellipse 7% 12% at 0% 100%, rgba(254, 30, 130, 0.55) 0%, rgba(254, 30, 130, 0) 100%),
+    radial-gradient(ellipse 7% 12% at 100% 100%, rgba(254, 30, 130, 0.55) 0%, rgba(254, 30, 130, 0) 100%),
+    radial-gradient(ellipse 10% 28% at 0% 74%, rgba(252, 128, 220, 0.7) 0%, rgba(252, 128, 220, 0) 100%),
+    radial-gradient(ellipse 10% 28% at 100% 74%, rgba(252, 128, 220, 0.7) 0%, rgba(252, 128, 220, 0) 100%),
+    radial-gradient(ellipse 8% 22% at 0% 22%, rgba(60, 110, 215, 0.22) 0%, rgba(60, 110, 215, 0) 100%),
+    radial-gradient(ellipse 8% 22% at 100% 22%, rgba(60, 110, 215, 0.22) 0%, rgba(60, 110, 215, 0) 100%),
+    linear-gradient(180deg,
+      #222327 0%, #252c3b 8%, #29395b 14%, #2e4a81 20%, #355baa 26%, #3865c2 30%, #3d6fd9 34%,
+      #5378ea 38%, #767ff2 42%, #9f81f1 46%, #c883ec 50%, #e884e7 54%, #fb82e3 58%, #fe7ede 62%,
+      #fc74d3 66%, #fd68c4 70%, #fd5ab4 74%, #fd4ba2 78%, #fd3b91 82%, #fe2f80 86%, #fe2570 90%,
+      #fe2462 94%, #fe2a55 100%);
+  --aurora-meio:
+    linear-gradient(180deg,
+      #212224 0%, #212224 14%, #21252a 20%, #252d3d 26%, #27344f 30%, #2a3d62 34%, #2d4575 38%,
+      #304d8a 42%, #3a5aa8 48%, #5a6ad0 55%, #8978df 62%, #ae7de6 66%, #cd7ae0 70%, #e674d4 74%,
+      #f66ac8 78%, #fd5eb9 82%, #fd51a8 86%, #fe4694 90%, #fd3f7e 94%, #fd3a63 100%);
+  --aurora-centro:
+    linear-gradient(180deg,
+      #212224 0%, #212224 34%, #263044 42%, #283863 50%, #2f4a8c 56%, #3f5cab 62%, #5668c1 66%,
+      #7871d1 70%, #a87bde 74%, #d27fe1 78%, #f17cde 82%, #fd75d3 86%, #fe69c5 90%, #fc5db7 94%,
+      #fd4f9f 100%);
+  --aurora-mascara-meio:
+    radial-gradient(ellipse 36% 16% at 50% 46%,
+      #000 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.2) 76%, rgba(0, 0, 0, 0) 100%),
+    radial-gradient(ellipse 60% 81% at 50% 0%,
+      #000 0%, rgba(0, 0, 0, 0.85) 35%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.15) 62%, rgba(0, 0, 0, 0) 72%),
+    linear-gradient(90deg,
+      rgba(0, 0, 0, 0) 27%, rgba(0, 0, 0, 0.25) 31%, rgba(0, 0, 0, 0.7) 35%, #000 38%,
+      #000 62%, rgba(0, 0, 0, 0.7) 65%, rgba(0, 0, 0, 0.25) 69%, rgba(0, 0, 0, 0) 73%);
+  --aurora-mascara-centro:
+    linear-gradient(90deg,
+      rgba(0, 0, 0, 0) 38%, rgba(0, 0, 0, 0.5) 42%, #000 46%, #000 54%, rgba(0, 0, 0, 0.5) 58%, rgba(0, 0, 0, 0) 62%);
+}
+
+body.fundo--aurora .fundo,
+.previa.fundo--aurora {
+  background-color: var(--tema-base);
+  background-image: var(--aurora-faixas);
+}
+
+body.fundo--aurora .fundo::before,
+.previa.fundo--aurora::before {
+  background: var(--aurora-meio);
+  -webkit-mask-image: var(--aurora-mascara-meio);
+  mask-image: var(--aurora-mascara-meio);
+}
+
+body.fundo--aurora .fundo::after,
+.previa.fundo--aurora::after {
+  background: var(--aurora-centro);
+  -webkit-mask-image: var(--aurora-mascara-centro);
+  mask-image: var(--aurora-mascara-centro);
+}
+
+/* --- roxo (gradiente escuro da marca) --- */
+body.fundo--roxo .fundo,
+.previa.fundo--roxo {
+  background:
+    radial-gradient(ellipse 70% 55% at 85% 100%, hsl(280 85% 38% / 0.55) 0%, hsl(280 85% 38% / 0) 100%),
+    linear-gradient(160deg, hsl(240 15% 8%) 0%, hsl(258 40% 14%) 45%, hsl(280 85% 30%) 100%);
+}
+
+/* --- claro e escuro: lisos (a cor vem de --tema-base) --- */
+
+/* Celular (retrato): em % da largura o "U" ficaria uma coluna fina; aqui ele é
+   mais largo e mais curto, para as cores subirem pelas bordas como no desktop. */
+@media (max-width: 767px) {
+  body.fundo--aurora {
+    --aurora-mascara-meio:
+      radial-gradient(ellipse 95% 62% at 50% 0%,
+        #000 0%, rgba(0, 0, 0, 0.85) 35%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.15) 62%, rgba(0, 0, 0, 0) 72%),
+      linear-gradient(90deg,
+        rgba(0, 0, 0, 0) 4%, rgba(0, 0, 0, 0.3) 14%, rgba(0, 0, 0, 0.75) 24%, #000 32%,
+        #000 68%, rgba(0, 0, 0, 0.75) 76%, rgba(0, 0, 0, 0.3) 86%, rgba(0, 0, 0, 0) 96%);
+    --aurora-mascara-centro:
+      linear-gradient(90deg,
+        rgba(0, 0, 0, 0) 22%, rgba(0, 0, 0, 0.5) 32%, #000 42%, #000 58%, rgba(0, 0, 0, 0.5) 68%, rgba(0, 0, 0, 0) 78%);
+  }
+}

@@ -1,0 +1,4 @@
+{% if form.non_field_errors %}<ul class="erros erros--geral" id="erro-geral" role="alert">{% for erro in form.non_field_errors %}<li>{{ erro }}</li>{% endfor %}</ul>{% endif %}
+{% for field in form %}
+{% include "painel/_campo.html" %}
+{% endfor %}

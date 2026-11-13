@@ -1,0 +1,21 @@
+{% extends "painel/base.html" %}
+{% load static %}
+
+{% block title %}Entrar{% endblock %}
+
+{% block content %}
+<div class="p-entrar">
+  <div class="p-entrar__marca">
+    <img src="{% static 'img/creative_logo_branco.png' %}" alt="Creative Comunicação" width="546" height="165">
+    <p>Painel do site</p>
+  </div>
+  <form class="p-cartao p-entrar__form" method="post" action="{% url 'painel:entrar' %}">
+    {% csrf_token %}
+    <h1 class="p-titulo">Entrar no painel</h1>
+    <p class="p-suave">Acesso restrito à equipe da Creative Comunicação.</p>
+    {% include "painel/_campos.html" %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="p-botao p-botao--primario p-botao--bloco" type="submit">Entrar</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "painel/base.html" %}
+
+{% block title %}Início{% endblock %}
+
+{% block content %}
+<header class="p-cabecalho">
+  <div>
+    <h1 class="p-titulo">Olá{% if user.first_name %}, {{ user.first_name }}{% endif %}!</h1>
+    <p class="p-suave">Aqui você cuida das fotos, dos depoimentos, das mensagens e do visual do site.</p>
+  </div>
+</header>
+
+<ul class="p-resumo" role="list">
+  <li class="p-cartao p-numero">
+    <span class="p-numero__icone"><svg aria-hidden="true"><use href="#i-imagem"></use></svg></span>
+    <span><strong id="total-fotos">{{ total_fotos }}</strong> foto{{ total_fotos|pluralize }}</span>
+    <small>{{ total_publicadas }} publicada{{ total_publicadas|pluralize }} no site</small>
+  </li>
+  <li class="p-cartao p-numero{% if nao_lidas %} p-numero--alerta{% endif %}">
+    <span class="p-numero__icone"><svg aria-hidden="true"><use href="#i-caixa"></use></svg></span>
+    <span><strong id="total-nao-lidas">{{ nao_lidas }}</strong> mensage{{ nao_lidas|pluralize:"m,ns" }} não lida{{ nao_lidas|pluralize }}</span>
+    <small><a href="{% url 'painel:mensagens' %}">Ver mensagens</a></small>
+  </li>
+  <li class="p-cartao p-numero">
+    <span class="p-numero__icone"><svg aria-hidden="true"><use href="#i-paleta"></use></svg></span>
+    <span><strong class="p-numero__texto">{{ config.get_fundo_display }}</strong></span>
+    <small>Fotos em: {{ config.get_modo_fotos_display }} · <a href="{% url 'painel:configuracoes' %}">Mudar</a></small>
+  </li>
+</ul>
+
+<section class="p-secao" aria-labelledby="atalhos-titulo">
+  <h2 id="atalhos-titulo" class="p-subtitulo">Atalhos</h2>
+  <div class="p-atalhos">
+    <a class="p-botao p-botao--primario" href="{% url 'painel:fotos' %}"><svg aria-hidden="true"><use href="#i-upload"></use></svg>Enviar fotos</a>
+    <a class="p-botao" href="{% url 'painel:depoimentos' %}"><svg aria-hidden="true"><use href="#i-mais"></use></svg>Novo depoimento</a>
+    <a class="p-botao" href="{% url 'painel:configuracoes' %}"><svg aria-hidden="true"><use href="#i-paleta"></use></svg>Fundo e contatos</a>
+  </div>
+</section>
+
+<section class="p-secao" aria-labelledby="ultimas-titulo">
+  <h2 id="ultimas-titulo" class="p-subtitulo">Últimas mensagens</h2>
+  {% if ultimas_mensagens %}
+  <ul class="lista-mensagens p-cartao p-cartao--lista" role="list">
+    {% for mensagem in ultimas_mensagens %}
+    <li class="{% if mensagem.lida %}lida{% else %}nao-lida{% endif %}">
+      <a class="p-msg" href="{% url 'painel:mensagem_detalhe' mensagem.pk %}">
+        <span class="p-msg__ponto" aria-hidden="true"></span>
+        <span class="p-msg__corpo">
+          <span class="p-msg__nome"><strong>{{ mensagem.nome }}</strong>{% if not mensagem.lida %} <span class="p-selo p-selo--nova">Nova</span>{% endif %}</span>
+          <span class="p-msg__servico">{{ mensagem.get_servico_display }}</span>
+        </span>
+        <time datetime="{{ mensagem.criada_em|date:'c' }}">{{ mensagem.criada_em|date:"d/m H:i" }}</time>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="p-vazio p-cartao">
+    <svg aria-hidden="true"><use href="#i-caixa"></use></svg>
+    <p><strong>Nenhuma mensagem ainda.</strong> Quando alguém usar o formulário do site, ela aparece aqui.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "painel/base.html" %}
+
+{% block title %}Fotos{% endblock %}
+
+{% block content %}
+<header class="p-cabecalho">
+  <div>
+    <h1 class="p-titulo">Fotos do portfólio</h1>
+    <p class="p-suave">As fotos publicadas aparecem no site, na seção Portfólio.</p>
+  </div>
+</header>
+
+<form class="p-cartao p-upload" method="post" action="{% url 'painel:fotos' %}" enctype="multipart/form-data">
+  {% csrf_token %}
+  <h2 class="p-subtitulo">Enviar fotos</h2>
+  {% if form.non_field_errors %}<ul class="erros erros--geral" id="erro-geral" role="alert">{% for erro in form.non_field_errors %}<li>{{ erro }}</li>{% endfor %}</ul>{% endif %}
+
+  <div class="campo">
+    <label class="p-upload__area" for="{{ form.imagens.id_for_label }}">
+      <svg aria-hidden="true"><use href="#i-upload"></use></svg>
+      <strong>Toque para escolher as fotos</strong>
+      <small>{{ form.imagens.label }}</small>
+      {{ form.imagens }}
+    </label>
+    {% if form.imagens.errors %}<ul class="erros" id="erro-{{ form.imagens.html_name }}" role="alert">{% for erro in form.imagens.errors %}<li>{{ erro }}</li>{% endfor %}</ul>{% endif %}
+  </div>
+
+  <div class="p-previa" data-previa hidden>
+    <p class="p-previa__resumo" aria-live="polite" data-previa-resumo></p>
+    <ul class="p-previa__lista" role="list" data-previa-lista></ul>
+  </div>
+
+  <div class="p-upload__rodape">
+    {% include "painel/_campo.html" with field=form.categoria classe="p-upload__categoria" %}
+    <button class="p-botao p-botao--primario" type="submit"><svg aria-hidden="true"><use href="#i-upload"></use></svg>Enviar fotos</button>
+  </div>
+</form>
+
+<section class="p-secao" aria-labelledby="lista-fotos-titulo">
+  <div class="p-secao__barra">
+    <h2 id="lista-fotos-titulo" class="p-subtitulo">{% if filtro_categoria %}Fotos em “{{ filtro_categoria.nome }}”{% else %}Todas as fotos{% endif %} <span class="p-contagem">({{ fotos|length }})</span></h2>
+    <form class="p-filtro" method="get" action="{% url 'painel:fotos' %}">
+      <label for="filtro-categoria">Categoria</label>
+      <select id="filtro-categoria" name="categoria">
+        <option value="">Todas</option>
+        {% for categoria in categorias %}
+        <option value="{{ categoria.pk }}"{% if filtro_categoria and filtro_categoria.pk == categoria.pk %} selected{% endif %}>{{ categoria.nome }}</option>
+        {% endfor %}
+      </select>
+      <button class="p-botao" type="submit">Filtrar</button>
+    </form>
+  </div>
+
+  {% if fotos %}
+  <ul class="lista-fotos p-fotos" role="list">
+    {% for foto in fotos %}
+    <li class="p-cartao p-foto{% if not foto.publicada %} p-foto--oculta{% endif %}">
+      <div class="p-foto__imagem">
+        <img src="{{ foto.imagem.url }}" alt="{{ foto.texto_alternativo }}" loading="lazy">
+        {% if foto.publicada %}
+        <span class="p-selo p-selo--ok"><svg aria-hidden="true"><use href="#i-olho"></use></svg>Publicada</span>
+        {% else %}
+        <span class="p-selo p-selo--oculta"><svg aria-hidden="true"><use href="#i-olho-fechado"></use></svg>Oculta</span>
+        {% endif %}
+      </div>
+      <div class="p-foto__info">
+        <strong>{{ foto.titulo|default:"Sem título" }}</strong>
+        <span class="p-suave">{{ foto.categoria.nome|default:"Sem categoria" }} · ordem {{ foto.ordem }}</span>
+      </div>
+      <div class="p-foto__acoes">
+        <a class="p-botao" href="{% url 'painel:foto_editar' foto.pk %}"><svg aria-hidden="true"><use href="#i-lapis"></use></svg>Editar</a>
+        <form method="post" action="{% url 'painel:foto_excluir' foto.pk %}" data-confirmar="Excluir esta foto? Ela sai do site e o arquivo é apagado.">
+          {% csrf_token %}
+          <button class="p-botao p-botao--perigo" type="submit"><svg aria-hidden="true"><use href="#i-lixeira"></use></svg>Excluir</button>
+        </form>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="p-vazio p-cartao">
+    <svg aria-hidden="true"><use href="#i-imagem"></use></svg>
+    <p><strong>Nenhuma foto{% if filtro_categoria %} em “{{ filtro_categoria.nome }}”{% endif %}.</strong> Envie as fotos dos seus trabalhos no formulário acima.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

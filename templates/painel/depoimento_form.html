@@ -1,0 +1,29 @@
+{% extends "painel/base.html" %}
+
+{% block title %}Editar depoimento{% endblock %}
+
+{% block content %}
+<header class="p-cabecalho">
+  <div>
+    <a class="p-voltar" href="{% url 'painel:depoimentos' %}"><svg aria-hidden="true"><use href="#i-voltar"></use></svg>Voltar para os depoimentos</a>
+    <h1 class="p-titulo">Editar depoimento de {{ depoimento.nome }}</h1>
+  </div>
+</header>
+
+<div class="p-estreito p-pilha">
+  <form class="p-cartao p-form" method="post" action="{% url 'painel:depoimento_editar' depoimento.pk %}">
+    {% csrf_token %}
+    {% include "painel/_campos.html" %}
+    <div class="p-form__acoes">
+      <button class="p-botao p-botao--primario" type="submit">Salvar</button>
+      <a class="p-botao" href="{% url 'painel:depoimentos' %}">Cancelar</a>
+    </div>
+  </form>
+
+  <form class="p-zona-perigo" method="post" action="{% url 'painel:depoimento_excluir' depoimento.pk %}" data-confirmar="Excluir o depoimento de {{ depoimento.nome }}?">
+    {% csrf_token %}
+    <p>Para só tirar do site, desmarque “Ativo” e salve.</p>
+    <button class="p-botao p-botao--perigo" type="submit"><svg aria-hidden="true"><use href="#i-lixeira"></use></svg>Excluir depoimento</button>
+  </form>
+</div>
+{% endblock %}

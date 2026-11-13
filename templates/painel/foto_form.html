@@ -1,0 +1,36 @@
+{% extends "painel/base.html" %}
+
+{% block title %}Editar foto{% endblock %}
+
+{% block content %}
+<header class="p-cabecalho">
+  <div>
+    <a class="p-voltar" href="{% url 'painel:fotos' %}"><svg aria-hidden="true"><use href="#i-voltar"></use></svg>Voltar para as fotos</a>
+    <h1 class="p-titulo">Editar foto</h1>
+  </div>
+</header>
+
+<div class="p-duas-colunas">
+  <figure class="p-cartao p-foto-grande">
+    <img src="{{ foto.imagem.url }}" alt="{{ foto.texto_alternativo }}">
+    <figcaption class="p-suave">Enviada em {{ foto.criada_em|date:"d/m/Y H:i" }}</figcaption>
+  </figure>
+
+  <div class="p-pilha">
+    <form class="p-cartao p-form" method="post" action="{% url 'painel:foto_editar' foto.pk %}">
+      {% csrf_token %}
+      {% include "painel/_campos.html" %}
+      <div class="p-form__acoes">
+        <button class="p-botao p-botao--primario" type="submit">Salvar</button>
+        <a class="p-botao" href="{% url 'painel:fotos' %}">Cancelar</a>
+      </div>
+    </form>
+
+    <form class="p-zona-perigo" method="post" action="{% url 'painel:foto_excluir' foto.pk %}" data-confirmar="Excluir esta foto? Ela sai do site e o arquivo é apagado.">
+      {% csrf_token %}
+      <p>Excluir apaga a foto do site e do servidor.</p>
+      <button class="p-botao p-botao--perigo" type="submit"><svg aria-hidden="true"><use href="#i-lixeira"></use></svg>Excluir foto</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

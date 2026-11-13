@@ -1,0 +1,48 @@
+{% extends "painel/base.html" %}
+
+{% block title %}Categorias{% endblock %}
+
+{% block content %}
+<header class="p-cabecalho">
+  <div>
+    <h1 class="p-titulo">Categorias</h1>
+    <p class="p-suave">Elas viram os filtros da galeria no site. Só aparecem as que têm foto publicada.</p>
+  </div>
+</header>
+
+<div class="p-duas-colunas p-duas-colunas--lista">
+  <section aria-labelledby="lista-categorias-titulo">
+    <h2 id="lista-categorias-titulo" class="p-subtitulo">Suas categorias</h2>
+    {% if categorias %}
+    <ul class="p-cartao p-cartao--lista p-linhas" role="list">
+      {% for categoria in categorias %}
+      <li class="p-linha">
+        <span class="p-linha__icone"><svg aria-hidden="true"><use href="#i-tag"></use></svg></span>
+        <span class="p-linha__corpo">
+          <strong>{{ categoria.nome }}</strong>
+          <span class="p-suave">{{ categoria.total_fotos }} foto{{ categoria.total_fotos|pluralize }} · ordem {{ categoria.ordem }}</span>
+        </span>
+        <a class="p-botao p-botao--icone" href="{% url 'painel:fotos' %}?categoria={{ categoria.pk }}" aria-label="Ver fotos de {{ categoria.nome }}"><svg aria-hidden="true"><use href="#i-imagem"></use></svg></a>
+        <form method="post" action="{% url 'painel:categoria_excluir' categoria.pk %}" data-confirmar="Excluir a categoria “{{ categoria.nome }}”? As {{ categoria.total_fotos }} foto(s) dela continuam no site, só que sem categoria.">
+          {% csrf_token %}
+          <button class="p-botao p-botao--perigo p-botao--icone" type="submit" aria-label="Excluir {{ categoria.nome }}"><svg aria-hidden="true"><use href="#i-lixeira"></use></svg></button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="p-vazio p-cartao">
+      <svg aria-hidden="true"><use href="#i-tag"></use></svg>
+      <p><strong>Nenhuma categoria.</strong> Crie a primeira ao lado.</p>
+    </div>
+    {% endif %}
+  </section>
+
+  <form class="p-cartao p-form" method="post" action="{% url 'painel:categorias' %}">
+    {% csrf_token %}
+    <h2 class="p-subtitulo">Nova categoria</h2>
+    {% include "painel/_campos.html" %}
+    <button class="p-botao p-botao--primario" type="submit"><svg aria-hidden="true"><use href="#i-mais"></use></svg>Criar categoria</button>
+  </form>
+</div>
+{% endblock %}

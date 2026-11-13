@@ -1,0 +1,98 @@
+{% load static %}<!doctype html>
+<html lang="pt-BR" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.replace("no-js", "js");</script>
+  <title>{% block title %}Creative Comunicação | Fachadas, ACM e Comunicação Visual{% endblock %}</title>
+  <meta name="description" content="Especialistas em Fachadas em ACM, Letras Caixa, Envelopamento e Comunicação Visual Premium para sua empresa.">
+  <meta name="theme-color" content="#212224">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:site_name" content="Creative Comunicação">
+  <meta property="og:title" content="Creative Comunicação | Comunicação Visual Premium">
+  <meta property="og:description" content="Destaque sua marca com fachadas em ACM, luminosos e sinalização de alta qualidade.">
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}/">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/creative_logo_branco.png' %}">
+  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'img/favicon.png' %}">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/fundos.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{{ fundo_classe }}">
+  <div class="fundo" aria-hidden="true"></div>
+  <a class="pular-link" href="#conteudo">Pular para o conteúdo</a>
+  {% include "_icones.html" %}
+
+  <header class="topo" data-topo>
+    <div class="container topo__barra">
+      <a class="topo__logo" href="{% url 'institucional:home' %}#inicio" aria-label="Creative Comunicação, ir para o início">
+        <img src="{% static 'img/creative_logo_branco.png' %}" alt="" width="546" height="165">
+      </a>
+      <button class="topo__menu-botao" type="button" aria-expanded="false" aria-controls="menu-site" data-menu-botao>
+        <svg aria-hidden="true"><use href="#i-menu"></use></svg>
+        <span>Menu</span>
+      </button>
+      <nav class="topo__nav" id="menu-site" aria-label="Menu principal">
+        <ul class="topo__links">
+          <li><a href="{% url 'institucional:home' %}#inicio">Início</a></li>
+          <li><a href="{% url 'institucional:home' %}#servicos">Serviços</a></li>
+          <li><a href="{% url 'institucional:home' %}#portfolio">Portfólio</a></li>
+          <li><a href="{% url 'institucional:home' %}#sobre">Sobre</a></li>
+          {% if depoimentos %}<li><a href="{% url 'institucional:home' %}#depoimentos">Depoimentos</a></li>{% endif %}
+          <li><a href="{% url 'institucional:home' %}#contato">Contato</a></li>
+          <li class="topo__cta"><a href="{% url 'institucional:home' %}#contato">Solicitar Orçamento</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  {% if messages %}
+  <div class="mensagens" role="status">
+    {% for message in messages %}
+    <p class="mensagem mensagem--{{ message.tags }}">
+      <span class="mensagem__texto">{{ message }}</span>
+      <button class="mensagem__fechar" type="button" aria-label="Fechar aviso" data-fechar-mensagem>
+        <svg aria-hidden="true"><use href="#i-fechar"></use></svg>
+      </button>
+    </p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div id="conteudo">
+    {% block content %}{% endblock %}
+  </div>
+
+  <footer id="rodape" class="rodape">
+    <div class="container">
+      <div class="rodape__grade">
+        <div>
+          <img class="rodape__logo" src="{% static 'img/creative_logo_branco.png' %}" alt="Creative Comunicação" width="546" height="165" loading="lazy">
+          <p>Transformando ideias em experiências visuais impactantes. Sua marca merece o melhor em comunicação visual.</p>
+        </div>
+        <div>
+          <p class="rodape__titulo">Contato</p>
+          <ul class="rodape__lista" role="list">
+            <li><a href="{{ config.telefone_href }}"><svg aria-hidden="true"><use href="#i-telefone"></use></svg>{{ config.telefone }}</a></li>
+            <li><a href="mailto:{{ config.email }}"><svg aria-hidden="true"><use href="#i-email"></use></svg>{{ config.email }}</a></li>
+            <li><span><svg aria-hidden="true"><use href="#i-local"></use></svg>{{ config.cidade }}</span></li>
+          </ul>
+        </div>
+        <div>
+          <p class="rodape__titulo">Atendimento</p>
+          <ul class="rodape__lista" role="list">
+            <li><span><svg aria-hidden="true"><use href="#i-relogio"></use></svg>{{ config.horario }}</span></li>
+            {% if config.instagram %}<li><a href="{{ config.instagram }}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-instagram"></use></svg>Instagram<span class="visualmente-oculto"> (abre em nova aba)</span></a></li>{% endif %}
+          </ul>
+        </div>
+      </div>
+      <p class="rodape__copy">© {% now "Y" %} Creative Comunicação. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="{% static 'js/site.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

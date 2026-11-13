@@ -1,0 +1,51 @@
+{% extends "painel/base.html" %}
+
+{% block title %}Depoimentos{% endblock %}
+
+{% block content %}
+<header class="p-cabecalho">
+  <div>
+    <h1 class="p-titulo">Depoimentos</h1>
+    <p class="p-suave">Só os ativos aparecem no site, na ordem definida aqui (menor número primeiro).</p>
+  </div>
+</header>
+
+<div class="p-duas-colunas p-duas-colunas--lista">
+  <section aria-labelledby="lista-depoimentos-titulo">
+    <h2 id="lista-depoimentos-titulo" class="p-subtitulo">Cadastrados</h2>
+    {% if depoimentos %}
+    <ul class="p-depoimentos" role="list">
+      {% for depoimento in depoimentos %}
+      <li class="p-cartao p-depoimento{% if not depoimento.ativo %} inativo{% endif %}">
+        <div class="p-depoimento__topo">
+          <strong>{{ depoimento.nome }}</strong>
+          {% if depoimento.ativo %}<span class="p-selo p-selo--ok">Ativo</span>{% else %}<span class="p-selo p-selo--oculta">Desativado</span>{% endif %}
+        </div>
+        <span class="p-suave">{% if depoimento.empresa %}{{ depoimento.empresa }} · {% endif %}<span class="p-estrelas" aria-label="Nota {{ depoimento.nota }} de 5">{% for i in "12345" %}<svg class="{% if forloop.counter > depoimento.nota %}apagada{% endif %}" aria-hidden="true"><use href="#i-estrela"></use></svg>{% endfor %}</span> · ordem {{ depoimento.ordem }}</span>
+        <p class="p-depoimento__texto">{{ depoimento.texto|truncatechars:180 }}</p>
+        <div class="p-foto__acoes">
+          <a class="p-botao" href="{% url 'painel:depoimento_editar' depoimento.pk %}"><svg aria-hidden="true"><use href="#i-lapis"></use></svg>Editar</a>
+          <form method="post" action="{% url 'painel:depoimento_excluir' depoimento.pk %}" data-confirmar="Excluir o depoimento de {{ depoimento.nome }}? Se quiser só tirar do site, use “Editar” e desmarque “Ativo”.">
+            {% csrf_token %}
+            <button class="p-botao p-botao--perigo" type="submit"><svg aria-hidden="true"><use href="#i-lixeira"></use></svg>Excluir</button>
+          </form>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="p-vazio p-cartao">
+      <svg aria-hidden="true"><use href="#i-citacao"></use></svg>
+      <p><strong>Nenhum depoimento.</strong> Cadastre o primeiro no formulário.</p>
+    </div>
+    {% endif %}
+  </section>
+
+  <form class="p-cartao p-form" method="post" action="{% url 'painel:depoimentos' %}">
+    {% csrf_token %}
+    <h2 class="p-subtitulo">Novo depoimento</h2>
+    {% include "painel/_campos.html" %}
+    <button class="p-botao p-botao--primario" type="submit"><svg aria-hidden="true"><use href="#i-mais"></use></svg>Criar depoimento</button>
+  </form>
+</div>
+{% endblock %}

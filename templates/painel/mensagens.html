@@ -1,0 +1,43 @@
+{% extends "painel/base.html" %}
+
+{% block title %}Mensagens{% endblock %}
+
+{% block content %}
+<header class="p-cabecalho">
+  <div>
+    <h1 class="p-titulo">Mensagens do site</h1>
+    <p class="p-suave">Pedidos enviados pelo formulário de contato, das mais recentes para as mais antigas.</p>
+  </div>
+</header>
+
+{% if mensagens %}
+<ul class="lista-mensagens p-cartao p-cartao--lista" role="list">
+  {% for mensagem in mensagens %}
+  <li class="{% if mensagem.lida %}lida{% else %}nao-lida{% endif %}">
+    <a class="p-msg" href="{% url 'painel:mensagem_detalhe' mensagem.pk %}">
+      <span class="p-msg__ponto" aria-hidden="true"></span>
+      <span class="p-msg__corpo">
+        <span class="p-msg__nome"><strong>{{ mensagem.nome }}</strong>{% if not mensagem.lida %} <span class="p-selo p-selo--nova">Nova</span>{% endif %}</span>
+        <span class="p-msg__servico">{{ mensagem.get_servico_display }}</span>
+        <span class="p-msg__trecho">{{ mensagem.mensagem|truncatechars:110 }}</span>
+      </span>
+      <time datetime="{{ mensagem.criada_em|date:'c' }}">{{ mensagem.criada_em|date:"d/m/Y H:i" }}</time>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="p-vazio p-cartao">
+  <svg aria-hidden="true"><use href="#i-caixa"></use></svg>
+  <p><strong>Nenhuma mensagem ainda.</strong> Quando alguém usar o formulário do site, ela aparece aqui.</p>
+</div>
+{% endif %}
+
+{% if page_obj.has_other_pages %}
+<nav class="p-paginas" aria-label="Páginas">
+  {% if page_obj.has_previous %}<a class="p-botao" href="?page={{ page_obj.previous_page_number }}"><svg aria-hidden="true"><use href="#i-seta-esq"></use></svg>Mais recentes</a>{% endif %}
+  <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a class="p-botao" href="?page={{ page_obj.next_page_number }}">Mais antigas<svg aria-hidden="true"><use href="#i-seta-dir"></use></svg></a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

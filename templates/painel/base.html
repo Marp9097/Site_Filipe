@@ -1,0 +1,72 @@
+{% load static %}<!doctype html>
+<html lang="pt-BR" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <script>document.documentElement.classList.replace("no-js", "js");</script>
+  <title>{% block title %}Painel{% endblock %} · Creative Comunicação</title>
+  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+  <link rel="stylesheet" href="{% static 'css/painel.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body class="painel{% if user.is_authenticated and user.is_staff %} painel--logado{% else %} painel--publico{% endif %}">
+  <a class="pular-link" href="#conteudo">Pular para o conteúdo</a>
+  {% include "_icones.html" %}
+
+  {% if user.is_authenticated and user.is_staff %}
+  {% with atual=request.resolver_match.url_name %}
+  <header class="p-topo">
+    <button class="p-topo__menu" type="button" aria-expanded="false" aria-controls="p-lateral" aria-label="Abrir menu" data-abrir-menu>
+      <svg aria-hidden="true"><use href="#i-menu"></use></svg>
+    </button>
+    <a class="p-topo__logo" href="{% url 'painel:inicio' %}" aria-label="Início do painel">
+      <img src="{% static 'img/creative_logo_branco.png' %}" alt="" width="546" height="165">
+    </a>
+    <a class="p-topo__msgs" href="{% url 'painel:mensagens' %}" aria-label="Mensagens{% if nao_lidas %}: {{ nao_lidas }} não lida{{ nao_lidas|pluralize }}{% endif %}">
+      <svg aria-hidden="true"><use href="#i-caixa"></use></svg>
+      {% if nao_lidas %}<span class="p-topo__ponto" aria-hidden="true">{{ nao_lidas }}</span>{% endif %}
+    </a>
+  </header>
+
+  <nav class="p-lateral" id="p-lateral" aria-label="Menu do painel" data-menu>
+    <div class="p-lateral__cabeca">
+      <a class="p-lateral__logo" href="{% url 'painel:inicio' %}"><img src="{% static 'img/creative_logo_branco.png' %}" alt="Creative Comunicação" width="546" height="165"></a>
+      <button class="p-lateral__fechar" type="button" aria-label="Fechar menu" data-fechar-menu>
+        <svg aria-hidden="true"><use href="#i-fechar"></use></svg>
+      </button>
+    </div>
+    <p class="p-lateral__rotulo">Painel do site</p>
+    <ul class="p-lateral__links" role="list">
+      <li><a href="{% url 'painel:inicio' %}"{% if atual == "inicio" %} aria-current="page"{% endif %}><svg aria-hidden="true"><use href="#i-casa"></use></svg>Início</a></li>
+      <li><a href="{% url 'painel:fotos' %}"{% if atual == "fotos" or atual == "foto_editar" %} aria-current="page"{% endif %}><svg aria-hidden="true"><use href="#i-imagem"></use></svg>Fotos</a></li>
+      <li><a href="{% url 'painel:categorias' %}"{% if atual == "categorias" %} aria-current="page"{% endif %}><svg aria-hidden="true"><use href="#i-tag"></use></svg>Categorias</a></li>
+      <li><a href="{% url 'painel:depoimentos' %}"{% if atual == "depoimentos" or atual == "depoimento_editar" %} aria-current="page"{% endif %}><svg aria-hidden="true"><use href="#i-citacao"></use></svg>Depoimentos</a></li>
+      <li><a href="{% url 'painel:mensagens' %}"{% if atual == "mensagens" or atual == "mensagem_detalhe" %} aria-current="page"{% endif %}><svg aria-hidden="true"><use href="#i-caixa"></use></svg>Mensagens{% if nao_lidas %} <span class="badge" aria-label="{{ nao_lidas }} não lidas">{{ nao_lidas }}</span>{% endif %}</a></li>
+      <li><a href="{% url 'painel:configuracoes' %}"{% if atual == "configuracoes" %} aria-current="page"{% endif %}><svg aria-hidden="true"><use href="#i-engrenagem"></use></svg>Configurações</a></li>
+    </ul>
+    <div class="p-lateral__pe">
+      <p class="p-lateral__usuario">Conectado como <strong>{{ user.get_username }}</strong></p>
+      <form method="post" action="{% url 'painel:sair' %}">
+        {% csrf_token %}
+        <button class="p-lateral__sair" type="submit"><svg aria-hidden="true"><use href="#i-sair"></use></svg>Sair</button>
+      </form>
+    </div>
+  </nav>
+  <div class="p-sombra" data-fechar-menu hidden></div>
+  {% endwith %}
+  {% endif %}
+
+  <main class="p-conteudo painel-conteudo" id="conteudo">
+    {% if messages %}
+    <div class="mensagens" role="status">
+      {% for message in messages %}<p class="mensagem mensagem--{{ message.tags }}"><svg aria-hidden="true"><use href="{% if message.tags == 'error' %}#i-fechar{% else %}#i-check{% endif %}"></use></svg><span>{{ message }}</span></p>{% endfor %}
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{% static 'js/painel.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

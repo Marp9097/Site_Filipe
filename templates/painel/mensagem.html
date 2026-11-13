@@ -1,0 +1,30 @@
+{% extends "painel/base.html" %}
+
+{% block title %}Mensagem de {{ mensagem.nome }}{% endblock %}
+
+{% block content %}
+<header class="p-cabecalho">
+  <div>
+    <a class="p-voltar" href="{% url 'painel:mensagens' %}"><svg aria-hidden="true"><use href="#i-voltar"></use></svg>Voltar para as mensagens</a>
+    <h1 class="p-titulo">Mensagem de {{ mensagem.nome }}</h1>
+    <p class="p-suave">Recebida em {{ mensagem.criada_em|date:"d/m/Y \à\s H:i" }}</p>
+  </div>
+</header>
+
+<div class="p-estreito p-pilha">
+  <article class="p-cartao p-mensagem">
+    <dl class="p-dados">
+      <div><dt>Serviço</dt><dd>{{ mensagem.get_servico_display }}</dd></div>
+      <div><dt>E-mail</dt><dd><a href="{{ mailto_url }}">{{ mensagem.email }}</a></dd></div>
+      <div><dt>Telefone</dt><dd>{{ mensagem.telefone }}</dd></div>
+    </dl>
+    <h2 class="p-subtitulo">Mensagem</h2>
+    <p class="p-mensagem__texto">{{ mensagem.mensagem|linebreaksbr }}</p>
+  </article>
+
+  <div class="p-acoes-resposta">
+    {% if whatsapp_resposta_url %}<a class="p-botao p-botao--whatsapp" href="{{ whatsapp_resposta_url }}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-whatsapp"></use></svg>Responder no WhatsApp</a>{% endif %}
+    <a class="p-botao p-botao--primario" href="{{ mailto_url }}"><svg aria-hidden="true"><use href="#i-email"></use></svg>Responder por e-mail</a>
+  </div>
+</div>
+{% endblock %}

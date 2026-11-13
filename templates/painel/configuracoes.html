@@ -1,0 +1,72 @@
+{% extends "painel/base.html" %}
+{% load static %}
+
+{% block title %}Configurações{% endblock %}
+
+{% block head %}<link rel="stylesheet" href="{% static 'css/fundos.css' %}">{% endblock %}
+
+{% block content %}
+<header class="p-cabecalho">
+  <div>
+    <h1 class="p-titulo">Configurações do site</h1>
+    <p class="p-suave">Escolha o visual do site e mantenha os contatos em dia. Tudo muda no site assim que você salvar.</p>
+  </div>
+</header>
+
+<form class="p-pilha" method="post" action="{% url 'painel:configuracoes' %}">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<ul class="erros erros--geral" id="erro-geral" role="alert">{% for erro in form.non_field_errors %}<li>{{ erro }}</li>{% endfor %}</ul>{% endif %}
+
+  <fieldset class="p-cartao p-grupo">
+    <legend class="p-subtitulo">Fundo do site</legend>
+    <p class="p-suave">A miniatura mostra como fica o topo do site com cada fundo.</p>
+    <div class="opcoes-fundo">
+      {% for opcao in opcoes_fundo %}
+      <label class="opcao-fundo">
+        <span class="previa {{ opcao.classe }}" aria-hidden="true">
+          <span class="previa__logo"></span>
+          <span class="previa__titulo"></span>
+          <span class="previa__cartao"><span class="previa__botao"></span></span>
+        </span>
+        <span class="opcao__linha">
+          <input type="radio" name="{{ form.fundo.html_name }}" value="{{ opcao.valor }}"{% if form.fundo.value == opcao.valor %} checked{% endif %}>
+          <span>{{ opcao.rotulo }}</span>
+        </span>
+      </label>
+      {% endfor %}
+    </div>
+    {% if form.fundo.errors %}<ul class="erros" id="erro-fundo">{% for erro in form.fundo.errors %}<li>{{ erro }}</li>{% endfor %}</ul>{% endif %}
+  </fieldset>
+
+  <fieldset class="p-cartao p-grupo">
+    <legend class="p-subtitulo">Exibição das fotos</legend>
+    <p class="p-suave">Como o portfólio aparece no site.</p>
+    <div class="opcoes-modo">
+      {% for opcao in opcoes_modo %}
+      <label class="opcao-modo">
+        <span class="opcao-modo__icone" aria-hidden="true"><svg><use href="{% if opcao.valor == 'carrossel' %}#i-carrossel{% else %}#i-grade{% endif %}"></use></svg></span>
+        <span class="opcao__linha">
+          <input type="radio" name="{{ form.modo_fotos.html_name }}" value="{{ opcao.valor }}"{% if form.modo_fotos.value == opcao.valor %} checked{% endif %}>
+          <span>{{ opcao.rotulo }}</span>
+        </span>
+        <small class="p-suave">{% if opcao.valor == "carrossel" %}Uma foto grande por vez, com setas e deslizar no celular.{% else %}Grade de fotos com filtro por categoria e ampliação ao clicar.{% endif %}</small>
+      </label>
+      {% endfor %}
+    </div>
+    {% if form.modo_fotos.errors %}<ul class="erros" id="erro-modo_fotos">{% for erro in form.modo_fotos.errors %}<li>{{ erro }}</li>{% endfor %}</ul>{% endif %}
+  </fieldset>
+
+  <fieldset class="p-cartao p-grupo">
+    <legend class="p-subtitulo">Contatos e informações</legend>
+    <div class="p-grade-campos">
+      {% for field in form %}{% if field.name != "fundo" and field.name != "modo_fotos" %}
+      {% include "painel/_campo.html" %}
+      {% endif %}{% endfor %}
+    </div>
+  </fieldset>
+
+  <div class="p-barra-salvar">
+    <button class="p-botao p-botao--primario" type="submit">Salvar configurações</button>
+  </div>
+</form>
+{% endblock %}
