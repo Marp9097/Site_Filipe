@@ -1,4 +1,4 @@
-galeria
+carrossel
 
 # Escreva na primeira linha como as fotos do portfólio aparecem no site:
 #   galeria    -> grade de fotos, com filtro por categoria e foto ampliada ao clicar
