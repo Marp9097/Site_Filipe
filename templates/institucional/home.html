@@ -200,8 +200,12 @@
         </header>
 
         <div class="contato">
+          {% if modo_estatico %}
+          <form class="cartao formulario" action="#contato" data-contato-estatico data-whatsapp="{{ whatsapp_url|yesno:'1,' }}" data-numero="{{ config.whatsapp }}" data-email="{{ config.email }}">
+          {% else %}
           <form class="cartao formulario" method="post" action="{% url 'institucional:contato' %}#contato" novalidate>
             {% csrf_token %}
+          {% endif %}
             {% if form.errors %}<p class="erros erros--geral" role="alert">Confira os campos destacados abaixo.</p>{% endif %}
             {% if form.non_field_errors %}<ul class="erros erros--geral">{% for erro in form.non_field_errors %}<li>{{ erro }}</li>{% endfor %}</ul>{% endif %}
             <div class="formulario__grade">
@@ -238,6 +242,7 @@
 {% endblock %}
 
 {% block scripts %}
+{% if modo_estatico %}<script src="{% static 'js/contato-estatico.js' %}" defer></script>{% endif %}
 {% if fotos %}
 {% if config.modo_fotos == "carrossel" %}<script src="{% static 'js/carrossel.js' %}" defer></script>{% else %}<script src="{% static 'js/galeria.js' %}" defer></script>{% endif %}
 {% endif %}
