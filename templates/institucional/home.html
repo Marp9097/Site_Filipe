@@ -6,7 +6,7 @@
 <section id="inicio" class="hero" aria-labelledby="hero-titulo">
   <div class="container hero__conteudo">
     <img class="hero__logo" src="{% static 'img/creative_logo_branco.png' %}" alt="Creative Comunicação" width="546" height="165" fetchpriority="high" data-hero-logo>
-    <p class="chip hero__selo"><svg aria-hidden="true"><use href="#i-brilho"></use></svg>Comunicação visual em {{ config.cidade }}</p>
+    <a class="chip hero__selo" href="https://www.google.com/maps/search/?api=1&amp;query={{ 'Creative Comunicação '|add:config.cidade|urlencode:'' }}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-brilho"></use></svg>Comunicação visual em {{ config.cidade }}<span class="visualmente-oculto"> (ver no Google Maps, abre em nova aba)</span></a>
     <h1 id="hero-titulo" class="hero__titulo">Comunicação Visual que <span>destaca a sua marca</span></h1>
 
     <div class="hero__cartao">
