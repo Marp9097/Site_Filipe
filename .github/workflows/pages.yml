@@ -1,0 +1,44 @@
+# Publica o site no GitHub Pages a cada push na branch togithubpages.
+# Monta o portfólio a partir de fotos/ e modo-fotos.txt (scripts/montar_portfolio.py).
+name: Publicar site
+
+on:
+  push:
+    branches: [togithubpages]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Montar portfólio
+        run: python3 scripts/montar_portfolio.py
+
+      - name: Separar só os arquivos do site
+        run: |
+          mkdir _site
+          cp index.html .nojekyll _site/
+          cp -r static fotos _site/
+          find _site/fotos -name '.gitkeep' -delete
+          rm -f _site/fotos/COMO-USAR.txt
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4

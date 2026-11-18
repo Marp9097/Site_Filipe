@@ -62,6 +62,7 @@
           <p class="secao__subtitulo">Confira alguns dos projetos que realizamos com excelência e dedicação</p>
         </header>
 
+        {% if modo_estatico %}<!-- PORTFOLIO:INICIO -->{% endif %}
         {% if fotos %}
         <div id="portfolio-fotos" class="portfolio portfolio--{{ config.modo_fotos }}" data-modo="{{ config.modo_fotos }}">
           {% if config.modo_fotos == "carrossel" %}
@@ -133,6 +134,7 @@
           {% if config.instagram %}<a class="botao botao--secundario" href="{{ config.instagram }}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-instagram"></use></svg>Ver no Instagram<span class="visualmente-oculto"> (abre em nova aba)</span></a>{% endif %}
         </div>
         {% endif %}
+        {% if modo_estatico %}<!-- PORTFOLIO:FIM -->{% endif %}
 
         <div class="portfolio__cta">
           <p>Gostou do que viu? Entre em contato e faça seu orçamento!</p>
@@ -247,7 +249,9 @@
 
 {% block scripts %}
 {% if modo_estatico %}<script src="{% static 'js/contato-estatico.js' %}" defer></script>{% endif %}
+{% if modo_estatico %}<!-- PORTFOLIO-JS:INICIO -->{% endif %}
 {% if fotos %}
 {% if config.modo_fotos == "carrossel" %}<script src="{% static 'js/carrossel.js' %}" defer></script>{% else %}<script src="{% static 'js/galeria.js' %}" defer></script>{% endif %}
 {% endif %}
+{% if modo_estatico %}<!-- PORTFOLIO-JS:FIM -->{% endif %}
 {% endblock %}

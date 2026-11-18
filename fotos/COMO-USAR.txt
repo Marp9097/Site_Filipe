@@ -1,0 +1,10 @@
+PASTA DE FOTOS DO PORTFÓLIO
+
+- Coloque as fotos dentro da pasta da categoria (ex.: "Letreiros e Fachadas").
+  Cada pasta vira um botão de filtro na galeria; pastas vazias não aparecem no site.
+- Para criar uma categoria nova, crie uma pasta com o nome que deve aparecer no site.
+- Fotos soltas aqui (fora das pastas) aparecem sem categoria.
+- Formatos: JPG, PNG, WEBP, GIF ou AVIF. Prefira fotos com até ~2 MB (cerca de 1920 px no lado maior).
+- A ordem segue o nome do arquivo: use 01-..., 02-... para escolher quem aparece primeiro.
+- Para remover uma foto do site, apague o arquivo.
+- Galeria ou carrossel: edite o arquivo modo-fotos.txt na raiz do repositório.

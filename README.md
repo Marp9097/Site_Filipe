@@ -75,13 +75,24 @@ PostgreSQL via `DATABASE_URL`, WhiteNoise para estáticos (`collectstatic`). Pre
 
 ## GitHub Pages (branch `togithubpages`)
 
-O GitHub Pages só serve arquivos estáticos, então esta branch tem na **raiz** um `index.html` gerado a partir do Django:
+O site público roda só com arquivos estáticos no GitHub Pages, com o `index.html` na **raiz**.
+
+**Configurar uma vez:** no GitHub, *Settings → Pages → Build and deployment → Source: **GitHub Actions***.
+A cada push na branch `togithubpages`, o workflow `.github/workflows/pages.yml` monta o portfólio e publica.
+
+**Fotos do portfólio:** pasta `fotos/` (instruções em `fotos/COMO-USAR.txt`).
+- Cada subpasta é uma categoria (o nome da pasta aparece no filtro); fotos soltas ficam sem categoria.
+- A ordem segue o nome do arquivo (`01-...`, `02-...`). Prefira fotos de até ~2 MB.
+
+**Galeria ou carrossel:** primeira linha do arquivo `modo-fotos.txt` na raiz (`galeria` ou `carrossel`).
+
+**Formulário de contato:** abre o WhatsApp da empresa com a mensagem formatada (ou o e-mail, se não houver WhatsApp).
+
+**Textos e contatos** (telefone, e-mail, depoimentos...) ainda vêm do banco do Django. Depois de mudá-los:
 
 ```bash
 python manage.py gerar_estatico --url-publica https://USUARIO.github.io/REPOSITORIO/
-git add index.html .nojekyll fotos static && git commit -m "Atualiza site estático"
+git add index.html && git commit -m "Atualiza textos do site" && git push
 ```
 
-- O comando usa os dados atuais do banco (configurações, fotos publicadas, depoimentos ativos), copia as fotos para `fotos/` e usa a pasta `static/` da raiz. Todos os caminhos são relativos, então funciona em subpasta.
-- No GitHub: *Settings → Pages → Deploy from a branch → `togithubpages` / `(root)`*.
-- **Sem servidor:** o formulário de contato abre o WhatsApp da empresa com a mensagem preenchida (ou o e-mail, se não houver WhatsApp). O painel e o `/django-admin/` continuam só no servidor (VPS); depois de mudar algo no painel, rode o `gerar_estatico` de novo e faça commit para atualizar o Pages.
+Para testar o portfólio localmente: `python scripts/montar_portfolio.py`.
