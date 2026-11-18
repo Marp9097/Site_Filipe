@@ -72,3 +72,16 @@ Em dev, `/media/` é servido pelo Django nos dois hosts; em produção precisa d
 
 `config.settings.prod` (usado por `wsgi.py`/`asgi.py`): DEBUG False, HTTPS, cookies seguros, HSTS,
 PostgreSQL via `DATABASE_URL`, WhiteNoise para estáticos (`collectstatic`). Preencha `CSRF_TRUSTED_ORIGINS`.
+
+## GitHub Pages (branch `togithubpages`)
+
+O GitHub Pages só serve arquivos estáticos, então esta branch tem na **raiz** um `index.html` gerado a partir do Django:
+
+```bash
+python manage.py gerar_estatico --url-publica https://USUARIO.github.io/REPOSITORIO/
+git add index.html .nojekyll fotos static && git commit -m "Atualiza site estático"
+```
+
+- O comando usa os dados atuais do banco (configurações, fotos publicadas, depoimentos ativos), copia as fotos para `fotos/` e usa a pasta `static/` da raiz. Todos os caminhos são relativos, então funciona em subpasta.
+- No GitHub: *Settings → Pages → Deploy from a branch → `togithubpages` / `(root)`*.
+- **Sem servidor:** o formulário de contato abre o WhatsApp da empresa com a mensagem preenchida (ou o e-mail, se não houver WhatsApp). O painel e o `/django-admin/` continuam só no servidor (VPS); depois de mudar algo no painel, rode o `gerar_estatico` de novo e faça commit para atualizar o Pages.
